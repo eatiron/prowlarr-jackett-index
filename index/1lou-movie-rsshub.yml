@@ -1,0 +1,101 @@
+---
+id: 1lou-movie
+name: 1lou-movie
+description: "BT之家1lou / RSSHub：电影索引"
+language: zh-CN
+type: public
+encoding: UTF-8
+links:
+  - 'http://rsshub ip:rsshub port/1lou/'
+
+caps:
+  categorymappings:
+    - {id: Movies, cat: Movies, desc: "电影"}
+
+  modes:
+    search: [q]
+    movie-search: [q, imdbid]
+
+settings: []    
+
+search:
+  paths:
+    - path: 'search-bt下载 {{ if .Query.IMDBID }}{{ .Query.IMDBID }}{{ else }}{{ .Keywords }}{{ end }}.htm'
+      response:
+        type: xml
+
+  rows:
+    selector: rss > channel > item
+
+  fields:
+    category:
+      text: Movies
+    year:
+      selector: category 
+    
+    titleti:          
+      selector: description
+      filters:
+        - name: split
+          args: ["标题", 2]
+        - name: split
+          args: ["<br>", 0]
+        - name: replace
+          args: ["题", ""]          
+        - name: trim        
+        - name: replace
+          args: [":", " "]          
+        - name: replace
+          args: ["：", " "] 
+
+    titlepian:          
+      selector: description
+      filters:
+        - name: split
+          args: ["片名", 1]
+        - name: split
+          args: ["</p>", 0]
+        - name: replace
+          args: ["名", ""]          
+        - name: trim        
+        - name: replace
+          args: [":", " "]          
+        - name: replace
+          args: ["：", " "]
+          
+    # profile:
+      # selector: title
+      # filters:
+        # - name: regexp
+          # args: (2160[Pp]|1080[Pp])              
+    
+    title:
+      selector: title
+      filters:
+        - name: prepend
+          args: "{{ if .Result.titleti }}{{ .Result.titleti }}{{ else }}{{ .Result.titlepian }}{{ end }} ({{ .Result.year }})."
+          
+    details:
+      selector: description
+    date:
+      selector: pubDate
+    download:
+      selector: enclosure[type="application/x-bittorrent"]
+      attribute: url
+    size:
+        selector: title
+        filters:
+          - name: regexp
+            args: (\d+(\.\d+)[gG])            
+          - name: re_replace
+            args: ["([gG])", "GiB"]
+
+    seeders:
+      text: 10
+    leechers:
+      text: 20
+    # downloadvolumefactor:
+      # text: 0
+    # uploadvolumefactor:
+      # text: 1
+# torznab xml
