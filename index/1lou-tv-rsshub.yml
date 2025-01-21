@@ -1,0 +1,131 @@
+---
+id: 1lou-tv
+name: 1lou-tv
+description: "BT之家1lou-RSSHub：电视剧索引"
+language: zh-CN
+type: public
+encoding: UTF-8
+links:
+  - 'http://rsshub ip:rsshub port/1lou/'
+
+caps:
+  categorymappings:
+    - {id: TV, cat: TV, desc: "电视剧"}
+
+  modes:
+    search: [q]
+    tv-search: [q]
+
+settings: []    
+
+
+search:
+  paths:
+    - path: 'search-bt下载 {{ if .Query.Keywords }}{{ .Query.Keywords }}{{ else }}{{ end }}.htm'
+      response:
+        type: xml
+
+
+  rows:
+    selector: rss > channel > item
+
+  fields:
+    category:
+      text: TV
+    year:
+      selector: category 
+    
+    titleti:          
+      selector: description
+      filters:
+        - name: split
+          args: ["标题", 2]
+        - name: split
+          args: ["<br>", 0]
+        - name: replace
+          args: ["题", ""]
+        - name: re_replace
+          args: ["(第.*?季)", ""]          
+        - name: trim                
+
+    titlepian:          
+      selector: description
+      filters:
+        - name: split
+          args: ["片名", 1]
+        - name: split
+          args: ["</p>", 0]
+        - name: replace
+          args: ["名", ""] 
+        - name: re_replace
+          args: ["(第.*?季)", ""]          
+        - name: trim        
+                              
+    # profile:
+      # selector: title
+      # filters:
+        # - name: regexp
+          # args: (2160[Pp]|1080[Pp])              
+
+    episodes:
+      selector: title
+      filters:
+        - name: regexp
+          args: (第\d+(-\d+)?集)
+        - name: re_replace
+          args: ["第(\\d+)集", "E$1"]
+        - name: re_replace
+          args: ["第(\\d+)-(\\d+)集", "E$1-$2"]
+          
+    seasonname:
+      selector: title
+      filters:
+        - name: regexp
+          args: (第.*?季)
+         
+      # case:
+        # "第一季": "S01"
+        # "第二季": "S02"
+        # "第三季": "S03"
+        # "第四季": "S04"
+        # "*": "S01"
+
+    seasonnum:
+      text: "{{ if eq .Result.seasonname \"第一季\" }}S01{{ else }}{{ end }}{{ if eq .Result.seasonname \"第二季\" }}S02{{ else }}{{ end }}{{ if eq .Result.seasonname \"第三季\" }}S03{{ else }}{{ end }}{{ if eq .Result.seasonname \"第四季\" }}S04{{ else }}{{ end }}{{ if eq .Result.seasonname \"第五季\" }}S05{{ else }}{{ end }}{{ if eq .Result.seasonname \"第六季\" }}S06{{ else }}{{ end }}{{ if eq .Result.seasonname \"第七季\" }}S07{{ else }}{{ end }}{{ if eq .Result.seasonname \"第八季\" }}S08{{ else }}{{ end }}{{ if eq .Result.seasonname \"第九季\" }}S09{{ else }}{{ end }}{{ if eq .Result.seasonname \"第十季\" }}S10{{ else }}{{ end }}{{ if eq .Result.seasonname \"第十一季\" }}S11{{ else }}{{ end }}{{ if eq .Result.seasonname \"第十二季\" }}S12{{ else }}{{ end }}{{ if eq .Result.seasonname \"第十三季\" }}S13{{ else }}{{ end }}{{ if eq .Result.seasonname \"第十四季\" }}S14{{ else }}{{ end }}{{ if eq .Result.seasonname \"第十五季\" }}S15{{ else }}{{ end }}{{ if eq .Result.seasonname \"第十六季\" }}S16{{ else }}{{ end }}{{ if eq .Result.seasonname \"第十七季\" }}S17{{ else }}{{ end }}{{ if eq .Result.seasonname \"第十八季\" }}S18{{ else }}{{ end }}{{ if eq .Result.seasonname \"第十九季\" }}S19{{ else }}{{ end }}{{ if eq .Result.seasonname \"第二十季\" }}S20{{ else }}{{ end }}{{ if eq .Result.seasonname \"第二十一季\" }}S21{{ else }}{{ end }}{{ if eq .Result.seasonname \"第二十二季\" }}S22{{ else }}{{ end }}{{ if eq .Result.seasonname \"第二十三季\" }}S23{{ else }}{{ end }}{{ if eq .Result.seasonname \"第二十四季\" }}S24{{ else }}{{ end }}{{ if eq .Result.seasonname \"第二十五季\" }}S25{{ else }}{{ end }}{{ if eq .Result.seasonname \"第二十六季\" }}S26{{ else }}{{ end }}{{ if eq .Result.seasonname \"第二十七季\" }}S27{{ else }}{{ end }}{{ if eq .Result.seasonname \"第二十八季\" }}S28{{ else }}{{ end }}{{ if eq .Result.seasonname \"第二十九季\" }}S29{{ else }}{{ end }}{{ if eq .Result.seasonname \"第三十季\" }}S30{{ else }}{{ end }}"
+
+    season:
+      text: "{{ if .Result.seasonnum }}{{ .Result.seasonnum }}{{ else }}S01{{ end }}" 
+      
+    title:
+      selector: title
+      filters:
+        - name: prepend
+          args: "{{ if .Result.titleti }}{{ .Result.titleti }}.{{ .Result.season }}{{ .Result.episodes }}{{ else }}{{ .Result.titlepian }}.{{ .Result.season }}{{ .Result.episodes }}{{ end }}."
+
+          
+    details:
+      selector: description
+    date:
+      selector: pubDate
+    download:
+      selector: enclosure[type="application/x-bittorrent"]
+      attribute: url
+      
+    size:      
+      selector: title
+      filters:
+        - name: regexp
+          args: (\d+(\.\d+)[gG])            
+        - name: re_replace
+          args: ["([gG])", "GiB"]
+          
+      
+    seeders:
+      text: 10
+    leechers:
+      text: 20
+    # downloadvolumefactor:
+      # text: 0
+    # uploadvolumefactor:
+      # text: 1
+# torznab xml
