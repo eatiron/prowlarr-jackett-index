@@ -1,9 +1,4 @@
-# prowlarr-jackett-index
-prowlarr &amp; jackett ：中文 &amp; 自定义 &amp; BT 的索引器
 
-## 仅用于学习和自己使用，禁止用作任何商业用途！！！
-
-如有侵权，请告知，我将在第一时间删除。
 
 ---
 下载index文件目录下的****.yml文件，放到
