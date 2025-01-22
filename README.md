@@ -20,3 +20,6 @@ prowlarr &amp; jackett ：中文 &amp; 自定义 &amp; BT 的索引器
 1、[**RSSHub**](https://github.com/DIYgod/RSSHub)
 
 2、[**Jackett自定义索引格式**](https://github.com/Jackett/Jackett/wiki/Definition-format)
+
+## 网站推荐
+issues提
